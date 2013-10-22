@@ -1,14 +1,14 @@
 " Vim indent file
 " Language:     SML
-" Maintainer:	Saikat Guha <sg266@cornell.edu>
-" 				Hubert Chao <hc85@cornell.edu>
+" Maintainer: Saikat Guha <sg266@cornell.edu>
+"         Hubert Chao <hc85@cornell.edu>
 " Original OCaml Version:
-" 				Jean-Francois Yuen  <jfyuen@ifrance.com>
+"         Jean-Francois Yuen  <jfyuen@ifrance.com>
 "               Mike Leary          <leary@nwlink.com>
 "               Markus Mottl        <markus@oefai.at>
 " OCaml URL:    http://www.oefai.at/~markus/vim/indent/ocaml.vim
-" Last Change:  2003 Jan 04	- Adapted to SML
-" 				2002 Nov 06 - Some fixes (JY)
+" Last Change:  2003 Jan 04 - Adapted to SML
+"         2002 Nov 06 - Some fixes (JY)
 "               2002 Oct 28 - Fixed bug with indentation of ']' (MM)
 "               2002 Oct 22 - Major rewrite (JY)
 
@@ -77,9 +77,9 @@ function! s:FindPair(pstart, pmid, pend)
 "  return indent(searchpair(a:pstart, a:pmid, a:pend, 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
   let lno = searchpair(a:pstart, a:pmid, a:pend, 'bW', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"')
   if lno == -1
-	return indent(lno)
+  return indent(lno)
   else
-	return col(".") - 1
+  return col(".") - 1
   endif
 endfunction
 
@@ -89,9 +89,9 @@ function! s:FindLet(pstart, pmid, pend)
   let lno = searchpair(a:pstart, a:pmid, a:pend, 'bW', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"')
   let moduleLine = getline(lno)
   if lno == -1 || moduleLine =~ '^\s*\(fun\|structure\|signature\)\>'
-	return indent(lno)
+  return indent(lno)
   else
-	return col(".") - 1
+  return col(".") - 1
   endif
 endfunction
 
@@ -113,101 +113,101 @@ function! GetSMLIndent()
   let ind = indent(lnum)
   let lline = getline(lnum)
 
-	" Return double 'shiftwidth' after lines matching:
-	if lline =~ '^\s*|.*=>\s*$'
-		return ind + &sw + &sw
-	elseif lline =~ '^\s*val\>.*=\s*$'
-		return ind + &sw
-	endif
+  " Return double 'shiftwidth' after lines matching:
+  if lline =~ '^\s*|.*=>\s*$'
+    return ind + &sw + &sw
+  elseif lline =~ '^\s*val\>.*=\s*$'
+    return ind + &sw
+  endif
 
   let line = getline(v:lnum)
 
-	" Indent lines starting with 'end' to matching module
-	if line =~ '^\s*end\>'
-		return s:FindLet(s:module, '', '\<end\>')
+  " Indent lines starting with 'end' to matching module
+  if line =~ '^\s*end\>'
+    return s:FindLet(s:module, '', '\<end\>')
 
-	" Match 'else' with 'if'
-	elseif line =~ '^\s*else\>'
-	  	if lline !~ '^\s*\(if\|else\|then\)\>'
-				return s:FindPair('\<if\>', '', '\<then\>')
-	  	else
-		  return ind
-		endif
+  " Match 'else' with 'if'
+  elseif line =~ '^\s*else\>'
+      if lline !~ '^\s*\(if\|else\|then\)\>'
+        return s:FindPair('\<if\>', '', '\<then\>')
+      else
+      return ind
+    endif
 
-	" Match 'then' with 'if'
-	elseif line =~ '^\s*then\>'
-  	if lline !~ '^\s*\(if\|else\|then\)\>'
-		  return s:FindPair('\<if\>', '', '\<then\>')
-	else
-	  return ind
-	endif
+  " Match 'then' with 'if'
+  elseif line =~ '^\s*then\>'
+    if lline !~ '^\s*\(if\|else\|then\)\>'
+      return s:FindPair('\<if\>', '', '\<then\>')
+  else
+    return ind
+  endif
 
-	" Indent if current line begins with ']'
-	elseif line =~ '^\s*\]'
-		return s:FindPair('\[','','\]')
+  " Indent if current line begins with ']'
+  elseif line =~ '^\s*\]'
+    return s:FindPair('\[','','\]')
 
   " Indent current line starting with 'in' to last matching 'let'
-	elseif line =~ '^\s*in\>'
-		let ind = s:FindLet('\<let\>','','\<in\>')
+  elseif line =~ '^\s*in\>'
+    let ind = s:FindLet('\<let\>','','\<in\>')
 
-	" Indent from last matching module if line matches:
-	elseif line =~ '^\s*\(fun\|val\|open\|structure\|and\|datatype\|type\|exception\)\>'
-		cursor(lnum,1)
-  		let lastModule = indent(searchpair(s:module, '', '\<end\>', 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
-		if lastModule == -1
-			return 0
-		else
-			return lastModule + &sw
-		endif
+  " Indent from last matching module if line matches:
+  elseif line =~ '^\s*\(fun\|val\|open\|structure\|and\|datatype\|type\|exception\)\>'
+    cursor(lnum,1)
+      let lastModule = indent(searchpair(s:module, '', '\<end\>', 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
+    if lastModule == -1
+      return 0
+    else
+      return lastModule + &sw
+    endif
 
-	" Indent lines starting with '|' from matching 'case', 'handle'
-	elseif line =~ '^\s*|'
-		" cursor(lnum,1)
-		let lastSwitch = search('\<\(case\|handle\|fun\|datatype\)\>','bW')
-		let switchLine = getline(lastSwitch)
-		let switchLineIndent = indent(lastSwitch)
-		if lline =~ '^\s*|'
-		  return ind
-		endif
-		if switchLine =~ '\<case\>'
-			return col(".") + 2
-		elseif switchLine =~ '\<handle\>'
-			return switchLineIndent + &sw
-		elseif switchLine =~ '\<datatype\>'
-			call search('=')
-			return col(".") - 1
-		else
-			return switchLineIndent + 2
-		endif
+  " Indent lines starting with '|' from matching 'case', 'handle'
+  elseif line =~ '^\s*|'
+    " cursor(lnum,1)
+    let lastSwitch = search('\<\(case\|handle\|fun\|datatype\)\>','bW')
+    let switchLine = getline(lastSwitch)
+    let switchLineIndent = indent(lastSwitch)
+    if lline =~ '^\s*|'
+      return ind
+    endif
+    if switchLine =~ '\<case\>'
+      return col(".") + 2
+    elseif switchLine =~ '\<handle\>'
+      return switchLineIndent + &sw
+    elseif switchLine =~ '\<datatype\>'
+      call search('=')
+      return col(".") - 1
+    else
+      return switchLineIndent + 2
+    endif
 
 
   " Indent if last line ends with 'sig', 'struct', 'let', 'then', 'else',
   " 'in'
   elseif lline =~ '\<\(sig\|struct\|let\|in\|then\|else\)\s*$'
-		let ind = ind + &sw
+    let ind = ind + &sw
 
   " Indent if last line ends with 'of', align from 'case'
   elseif lline =~ '\<\(of\)\s*$'
-		call search('\<case\>',"bW")
-		let ind = col(".")+4
+    call search('\<case\>',"bW")
+    let ind = col(".")+4
 
-	" Indent if current line starts with 'of'
+  " Indent if current line starts with 'of'
   elseif line =~ '^\s*of\>'
-		call search('\<case\>',"bW")
-		let ind = col(".")+1
+    call search('\<case\>',"bW")
+    let ind = col(".")+1
 
 
-	" Indent if last line starts with 'fun', 'case', 'fn'
-	elseif lline =~ '^\s*\(fun\|fn\|case\)\>'
-		let ind = ind + &sw
+  " Indent if last line starts with 'fun', 'case', 'fn'
+  elseif lline =~ '^\s*\(fun\|fn\|case\)\>'
+    let ind = ind + &sw
 
-	endif
+  endif
 
-	" Don't indent 'let' if last line started with 'fun', 'fn'
-	if line =~ '^\s*let\>'
-		if lline =~ '^\s*\(fun\|fn\)'
-			let ind = ind - &sw
-		endif
+  " Don't indent 'let' if last line started with 'fun', 'fn'
+  if line =~ '^\s*let\>'
+    if lline =~ '^\s*\(fun\|fn\)'
+      let ind = ind - &sw
+    endif
   endif
 
   return ind
