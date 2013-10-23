@@ -141,16 +141,16 @@ syn match    smlCharacter    +#"\\""\|#"."\|#"\\\d\d\d"+
 syn match    smlCharErr      +#"\\\d\d"\|#"\\\d"+
 syn region   smlString       start=+"+ skip=+\\\\\|\\"+ end=+"+
 
+syn match    smlKeyChar      "="
+syn match    smlKeyChar      "!"
+syn match    smlKeyChar      ";"
+syn match    smlKeyChar      "\*"
 syn match    smlFunDef       "=>"
 syn match    smlRefAssign    ":="
 syn match    smlTopStop      ";;"
 syn match    smlOperator     "\^"
 syn match    smlOperator     "::"
 syn match    smlAnyVar       "\<_\>"
-syn match    smlKeyChar      "!"
-syn match    smlKeyChar      ";"
-syn match    smlKeyChar      "\*"
-syn match    smlKeyChar      "="
 
 syn match    smlNumber	      "\<-\=\d\+\>"
 syn match    smlNumber	      "\<-\=0[x|X]\x\+\>"
