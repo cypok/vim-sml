@@ -114,7 +114,7 @@ function! GetSMLIndent()
   let lline = getline(lnum)
 
   " Return double 'shiftwidth' after lines matching:
-  if lline =~ '^\s*|.*=>\s*$'
+  if lline =~ '^\s*|.*=>\?\s*$'
     return ind + &sw + &sw
   elseif lline =~ '^\s*val\>.*=\s*$'
     return ind + &sw
