@@ -170,9 +170,10 @@ function! GetSMLIndent()
       return ind
     endif
     if switchLine =~ '\<case\>'
-      return col(".") + 2
+      return col(".") - 1
     elseif switchLine =~ '\<handle\>'
-      return switchLineIndent + &sw
+      call search('\<handle\>')
+      return col(".") + 4
     elseif switchLine =~ '\<datatype\>'
       call search('=')
       return col(".") - 1
@@ -180,6 +181,9 @@ function! GetSMLIndent()
       return switchLineIndent + 2
     endif
 
+  " Indent 'handle'
+  elseif line =~ '^\s*handle'
+    let ind = ind + &sw
 
   " Indent if last line ends with 'sig', 'struct', 'let', 'then', 'else',
   " 'in'
@@ -189,7 +193,7 @@ function! GetSMLIndent()
   " Indent if last line ends with 'of', align from 'case'
   elseif lline =~ '\<\(of\)\s*$'
     call search('\<case\>',"bW")
-    let ind = col(".")+4
+    let ind = col(".")+1
 
   " Indent if current line starts with 'of'
   elseif line =~ '^\s*of\>'
