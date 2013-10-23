@@ -73,7 +73,9 @@ endfunction
 
 " Indent pairs
 function! s:FindPair(pstart, pmid, pend)
-  call search(a:pend, 'bW')
+  if mode() == 'i'
+    call search(a:pend, 'bW')
+  endif
 "  return indent(searchpair(a:pstart, a:pmid, a:pend, 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
   let lno = searchpair(a:pstart, a:pmid, a:pend, 'bW', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"')
   if lno == -1
@@ -84,7 +86,9 @@ function! s:FindPair(pstart, pmid, pend)
 endfunction
 
 function! s:FindLet(pstart, pmid, pend)
-  call search(a:pend, 'bW')
+  if mode() == 'i'
+    call search(a:pend, 'bW')
+  endif
 "  return indent(searchpair(a:pstart, a:pmid, a:pend, 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
   let lno = searchpair(a:pstart, a:pmid, a:pend, 'bW', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"')
   let moduleLine = getline(lno)
@@ -128,19 +132,11 @@ function! GetSMLIndent()
 
   " Match 'else' with 'if'
   elseif line =~ '^\s*else\>'
-      if lline !~ '^\s*\(if\|else\|then\)\>'
-        return s:FindPair('\<if\>', '', '\<then\>')
-      else
-      return ind
-    endif
+    return s:FindPair('\<if\>', '', '\<else\>')
 
   " Match 'then' with 'if'
   elseif line =~ '^\s*then\>'
-    if lline !~ '^\s*\(if\|else\|then\)\>'
-      return s:FindPair('\<if\>', '', '\<then\>')
-  else
-    return ind
-  endif
+    return s:FindPair('\<if\>', '', '\<then\>')
 
   " Indent if current line begins with ']'
   elseif line =~ '^\s*\]'
@@ -153,7 +149,7 @@ function! GetSMLIndent()
   " Indent from last matching module if line matches:
   elseif line =~ '^\s*\(fun\|val\|open\|structure\|and\|datatype\|type\|exception\)\>'
     cursor(lnum,1)
-      let lastModule = indent(searchpair(s:module, '', '\<end\>', 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
+    let lastModule = indent(searchpair(s:module, '', '\<end\>', 'bWn', 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string\\|comment"'))
     if lastModule == -1
       return 0
     else
